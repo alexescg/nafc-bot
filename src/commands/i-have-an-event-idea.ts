@@ -18,7 +18,6 @@ const threadTemplate = `
 {description}
 `;
 
-
 import {
   CommandContext,
   ComponentType,
@@ -36,10 +35,17 @@ module.exports = class IHaveAnEventIdeaCommand extends SlashCommand {
     });
   }
 
+  // You can send a modal this way
+  // Keep in mind providing a callback is optional, but no callback requires the custom_id to be defined.
   async run(ctx: CommandContext) {
-    // You can send a modal this way
-    // Keep in mind providing a callback is optional, but no callback requires the custom_id to be defined.
-    ctx.sendModal(
+    const callback = async (mctx: ModalInteractionContext) => {
+      const threadContent = Object.keys(questionnaire).reduce((result, key) => {
+        return result.replace(`{${key}}`, mctx.values[key]);
+      }, threadTemplate);
+
+      return mctx.send(threadContent);
+    };
+    await ctx.sendModal(
       {
         title: 'New Event Idea',
         components: [
@@ -93,13 +99,7 @@ module.exports = class IHaveAnEventIdeaCommand extends SlashCommand {
           }
         ]
       },
-       async (mctx: ModalInteractionContext) => {
-        const threadContent = Object.keys(questionnaire).reduce((result, key) => {
-          return result.replace(`{${key}}`, mctx.values[key]);
-        }, threadTemplate);
-
-        mctx.send(threadContent);
-      }
+      callback
     );
   }
 };
