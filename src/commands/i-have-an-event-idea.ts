@@ -1,5 +1,5 @@
 const questionnaire = {
-  name: { header: "What's the event name?", placeholder: 'Event Idea name' },
+  name: { header: 'What\'s the event name?', placeholder: 'Event Idea name' },
   amountOfPeople: {
     header: 'No. of people needed',
     placeholder: 'It can be a fixed number or a range eg 8 to 12'
@@ -38,6 +38,8 @@ module.exports = class IHaveAnEventIdeaCommand extends SlashCommand {
   // You can send a modal this way
   // Keep in mind providing a callback is optional, but no callback requires the custom_id to be defined.
   async run(ctx: CommandContext) {
+    await ctx.defer();
+
     const callback = async (mctx: ModalInteractionContext) => {
       const threadContent = Object.keys(questionnaire).reduce((result, key) => {
         return result.replace(`{${key}}`, mctx.values[key]);
